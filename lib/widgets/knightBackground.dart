@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:task_knight_alpha/controllers/knightController.dart';
 import 'package:task_knight_alpha/widgets/knight.dart';
+import 'package:task_knight_alpha/widgets/slimeWidget.dart';
 
 class Knightbackground extends StatefulWidget {
   final Widget child;
@@ -7,34 +9,38 @@ class Knightbackground extends StatefulWidget {
   const Knightbackground({super.key, required this.child});
 
   @override
-  State<StatefulWidget> createState() => _KnightbackgroundState();
+  State<StatefulWidget> createState() => KnightbackgroundState();
 }
 
-class _KnightbackgroundState extends State<Knightbackground> {
+class KnightbackgroundState extends State<Knightbackground> {
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final double width = constraints.maxWidth;
-        final double height = constraints.maxHeight;
-
-        return Stack(
-          children: [
-            Positioned.fill(
-              child: Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/forestBackground.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: Image.asset(
+            'assets/images/forestBackgroundWide.png',
+            fit: BoxFit.none,
+            alignment: Alignment(0.3, 0.5),
+          ),
+        ),
+        Positioned(
+          bottom: MediaQuery.of(context).size.height * 0.15,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: SizedBox(
+              width: 115,
+              height: 115,
+              child: Knight(
+                key: KnightController.knightStateKey,
               ),
             ),
-            Knight(height: height, width: width),
-            widget.child,
-          ],
-        );
-      },
+          ),
+        ),
+        SlimeWidget(),
+        widget.child,
+      ],
     );
   }
 }
