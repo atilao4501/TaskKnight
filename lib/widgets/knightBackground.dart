@@ -6,13 +6,43 @@ import 'package:task_knight_alpha/widgets/slimeWidget.dart';
 class Knightbackground extends StatefulWidget {
   final Widget child;
 
-  const Knightbackground({super.key, required this.child});
+  Knightbackground({super.key, required this.child});
+
+  List<GlobalKey<SlimeState>> slimeKeys = [];
+  List<SlimeWidget> slimeWidgets = [];
+  var slimeKey = GlobalKey<SlimeState>();
 
   @override
   State<StatefulWidget> createState() => KnightbackgroundState();
 }
 
 class KnightbackgroundState extends State<Knightbackground> {
+  Future<void> spawnSlime() async {
+    final newKey = GlobalKey<SlimeState>();
+    final slime = SlimeWidget(key: newKey);
+
+    setState(() {
+      widget.slimeWidgets.add(slime);
+      widget.slimeKeys.add(newKey);
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final colors = ['Red', 'Green', 'Blue'];
+      final randomColor = (colors..shuffle()).first;
+      final randomBool =
+          (List<bool>.generate(2, (index) => index == 0)..shuffle()).first;
+
+      final completed =
+          await newKey.currentState?.spawnSlime(randomColor, randomBool);
+      if (completed == true) {
+        setState(() {
+          widget.slimeKeys.remove(newKey);
+          widget.slimeWidgets.remove(slime);
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -38,7 +68,7 @@ class KnightbackgroundState extends State<Knightbackground> {
             ),
           ),
         ),
-        SlimeWidget(),
+        ...widget.slimeWidgets,
         widget.child,
       ],
     );

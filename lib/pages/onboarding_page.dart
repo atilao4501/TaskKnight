@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:task_knight_alpha/controllers/knightController.dart';
 import 'package:task_knight_alpha/widgets/knight.dart';
 import 'package:task_knight_alpha/widgets/knightBackground.dart';
+import 'package:task_knight_alpha/widgets/slimeWidget.dart';
 
 class OnboardingPage extends StatefulWidget {
   @override
@@ -58,8 +59,9 @@ class OnboardingPageState extends State<OnboardingPage> {
             ),
             Center(
               child: ElevatedButton(
-                onPressed: () => KnightController.knightStateKey.currentState
-                    ?.changeStatus(),
+                onPressed: () => KnightController
+                    .knighBackgroundtKey.currentState
+                    ?.spawnSlime(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,

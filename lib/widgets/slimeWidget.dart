@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:task_knight_alpha/controllers/knightController.dart';
 
 class SlimeWidget extends StatefulWidget {
-  const SlimeWidget({Key? key}) : super(key: key);
+  const SlimeWidget({super.key});
 
   @override
   State<SlimeWidget> createState() => SlimeState();
@@ -16,61 +16,61 @@ class SlimeState extends State<SlimeWidget> {
   double slimePositionRight = 0;
   double valueToMove = 0;
 
-  void spawnSlime(String color, bool spawnInTheRight) {
+  Future<bool> spawnSlime(String color, bool spawnInTheRight) async {
     setState(() {
       this.color = color;
       spawned = true;
     });
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final unit = screenWidth * 0.0254;
+
     if (spawnInTheRight) {
-      valueToMove = (MediaQuery.of(context).size.width * 0.0254) * 48;
+      valueToMove = unit * 48;
 
-      Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (!spawned) {
-          timer.cancel();
-        } else {
-          setState(() {
-            valueToMove -= (MediaQuery.of(context).size.width * 0.0254);
+      while (spawned && valueToMove > 0) {
+        await Future.delayed(const Duration(seconds: 1));
 
-            if (MediaQuery.of(context).size.width * 0.80 > valueToMove) {
-              KnightController.knightStateKey.currentState?.lookRight();
-              KnightController.knightStateKey.currentState?.attack();
-            }
+        setState(() {
+          valueToMove -= unit;
 
-            if (MediaQuery.of(context).size.width * 0.75 > valueToMove) {
-              spawned = false;
-              valueToMove = MediaQuery.of(context).size.width;
-              KnightController.knightStateKey.currentState?.idle();
-              timer.cancel();
-            }
-          });
-        }
-      });
+          if (screenWidth * 0.80 > valueToMove) {
+            KnightController.knightStateKey.currentState?.lookRight();
+            KnightController.knightStateKey.currentState?.attack();
+          }
+
+          if (screenWidth * 0.75 > valueToMove) {
+            spawned = false;
+            valueToMove = screenWidth;
+            KnightController.knightStateKey.currentState?.idle();
+          }
+        });
+      }
     } else {
-      valueToMove = (MediaQuery.of(context).size.width * 0.0254) * 4;
-      Timer.periodic(const Duration(seconds: 1), (timer) {
-        if (!spawned) {
-          timer.cancel();
-        } else {
-          setState(() {
-            valueToMove += (MediaQuery.of(context).size.width * 0.0254);
+      valueToMove = unit * 4;
 
-            if (MediaQuery.of(context).size.width * 0.45 < valueToMove) {
-              KnightController.knightStateKey.currentState?.lookLeft();
-              KnightController.knightStateKey.currentState?.attack();
-            }
+      while (spawned && valueToMove < screenWidth) {
+        await Future.delayed(const Duration(seconds: 1));
 
-            if (MediaQuery.of(context).size.width * 0.55 < valueToMove) {
-              //spawned = false;
-              valueToMove = 0;
-              KnightController.knightStateKey.currentState?.idle();
-              KnightController.knightStateKey.currentState?.lookRight();
-              timer.cancel();
-            }
-          });
-        }
-      });
+        setState(() {
+          valueToMove += unit;
+
+          if (screenWidth * 0.45 < valueToMove) {
+            KnightController.knightStateKey.currentState?.lookLeft();
+            KnightController.knightStateKey.currentState?.attack();
+          }
+
+          if (screenWidth * 0.55 < valueToMove) {
+            spawned = false;
+            valueToMove = 0;
+            KnightController.knightStateKey.currentState?.idle();
+            KnightController.knightStateKey.currentState?.lookRight();
+          }
+        });
+      }
     }
+
+    return true;
   }
 
   @override
@@ -84,7 +84,6 @@ class SlimeState extends State<SlimeWidget> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_initialized) {
-      spawnSlime('Blue', true);
       _initialized = true;
     }
   }
