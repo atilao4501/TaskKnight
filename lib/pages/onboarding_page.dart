@@ -1,23 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:task_knight_alpha/controllers/knightController.dart';
+import 'package:task_knight_alpha/pages/home_page.dart';
 import 'package:task_knight_alpha/widgets/knight.dart';
 import 'package:task_knight_alpha/widgets/knightBackground.dart';
 import 'package:task_knight_alpha/widgets/slimeWidget.dart';
 
-class OnboardingPage extends StatefulWidget {
-  @override
-  State<OnboardingPage> createState() => OnboardingPageState();
-}
+class OnboardingPage extends StatelessWidget {
+  final VoidCallback onStart;
 
-class OnboardingPageState extends State<OnboardingPage> {
-  @override
-  void initState() {
-    super.initState();
-
-    Future.delayed(Duration.zero, () {
-      KnightController.knightStateKey.currentState?.changeMessage('Hello');
-    });
-  }
+  OnboardingPage({required this.onStart});
 
   final title = Stack(
     children: [
@@ -47,40 +38,36 @@ class OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Knightbackground(
-        key: KnightController.knighBackgroundtKey,
-        child: Stack(
-          children: [
-            Positioned(
-              top: 60,
-              left: 0,
-              right: 0,
-              child: Center(child: title),
-            ),
-            Center(
-              child: ElevatedButton(
-                onPressed: () => KnightController
-                    .knighBackgroundtKey.currentState
-                    ?.spawnSlime(),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  textStyle: TextStyle(
-                    fontSize: 20,
-                    fontFamily: 'VCR_OSD_MONO',
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  elevation: 5,
-                  fixedSize: Size(192, 44),
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          Positioned(
+            top: 60,
+            left: 0,
+            right: 0,
+            child: Center(child: title),
+          ),
+          Center(
+            child: ElevatedButton(
+              onPressed: onStart,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                textStyle: TextStyle(
+                  fontSize: 20,
+                  fontFamily: 'VCR_OSD_MONO',
                 ),
-                child: Text('Start'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                elevation: 5,
+                fixedSize: Size(192, 44),
               ),
+              child: Text('Start'),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

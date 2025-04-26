@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class Knight extends StatefulWidget {
-  const Knight({super.key});
+  Knight({super.key});
 
   @override
   State<Knight> createState() => KnightState();
@@ -14,6 +14,10 @@ class KnightState extends State<Knight> {
   String _status = 'Idle';
   String _message = '';
   bool _lookLeft = false;
+
+  Timer? _typingTimer;
+  Timer? _dotTimer;
+  Timer? _clearTimer;
 
   void lookLeft() {
     setState(() {
@@ -45,29 +49,46 @@ class KnightState extends State<Knight> {
     });
   }
 
-  void changeMessage(String newMessage) async {
+  void changeMessage(String newMessage) {
+    _typingTimer?.cancel();
+    _dotTimer?.cancel();
+    _clearTimer?.cancel();
+
     setState(() {
       _message = '';
     });
 
-    for (int i = 0; i < newMessage.length; i++) {
-      await Future.delayed(Duration(milliseconds: 300));
-      setState(() {
-        _message += newMessage[i];
-      });
-    }
-
-    for (int i = 0; i < 3; i++) {
-      await Future.delayed(Duration(milliseconds: 500));
-      setState(() {
-        _message += '.';
-      });
-    }
-
-    await Future.delayed(Duration(seconds: 10));
-    setState(() {
-      _message = '';
+    _typingTimer = Timer.periodic(Duration(milliseconds: 300), (timer) {
+      if (_message.length < newMessage.length) {
+        setState(() {
+          _message += newMessage[_message.length];
+        });
+      } else {
+        timer.cancel();
+        _dotTimer = Timer.periodic(Duration(milliseconds: 500), (dotTimer) {
+          if (_message.endsWith('...')) {
+            dotTimer.cancel();
+            _clearTimer = Timer(Duration(seconds: 10), () {
+              setState(() {
+                _message = '';
+              });
+            });
+          } else {
+            setState(() {
+              _message += '.';
+            });
+          }
+        });
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    _typingTimer?.cancel();
+    _dotTimer?.cancel();
+    _clearTimer?.cancel();
+    super.dispose();
   }
 
   @override

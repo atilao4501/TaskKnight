@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:task_knight_alpha/pages/onboarding_page.dart';
+import 'package:task_knight_alpha/wrappers/main_wrapper.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
@@ -28,12 +29,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        fontFamily: 'VCR_OSD_MONO',
-        useMaterial3: true,
-      ),
-      home: OnboardingPage(),
-    );
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          fontFamily: 'VCR_OSD_MONO',
+          useMaterial3: true,
+        ),
+        home: MainWrapper());
   }
 }
