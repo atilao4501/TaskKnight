@@ -8,7 +8,7 @@ import 'package:task_knight_alpha/widgets/slimeWidget.dart';
 class OnboardingPage extends StatelessWidget {
   final VoidCallback onStart;
 
-  OnboardingPage({required this.onStart});
+  OnboardingPage({super.key, required this.onStart});
 
   final title = Stack(
     children: [

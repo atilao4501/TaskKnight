@@ -5,6 +5,8 @@ import 'package:task_knight_alpha/pages/onboarding_page.dart';
 import 'package:task_knight_alpha/widgets/knightBackground.dart';
 
 class MainWrapper extends StatefulWidget {
+  const MainWrapper({super.key});
+
   @override
   State<MainWrapper> createState() => _MainWrapperState();
 }

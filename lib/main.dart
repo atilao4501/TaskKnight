@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:task_knight_alpha/pages/onboarding_page.dart';
 import 'package:task_knight_alpha/wrappers/main_wrapper.dart';
 import 'package:window_manager/window_manager.dart';
 

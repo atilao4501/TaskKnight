@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class Knight extends StatefulWidget {
-  Knight({super.key});
+  const Knight({super.key});
 
   @override
   State<Knight> createState() => KnightState();
