@@ -3,6 +3,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+extension StringExtension on String {
+  String capitalize() => '${this[0].toUpperCase()}${substring(1)}';
+}
+
+enum KnightStatus { idle, attack }
+
 class Knight extends StatefulWidget {
   const Knight({super.key});
 
@@ -11,7 +17,7 @@ class Knight extends StatefulWidget {
 }
 
 class KnightState extends State<Knight> {
-  String _status = 'Idle';
+  KnightStatus _status = KnightStatus.idle;
   String _message = '';
   bool _lookLeft = false;
 
@@ -19,44 +25,28 @@ class KnightState extends State<Knight> {
   Timer? _dotTimer;
   Timer? _clearTimer;
 
-  void lookLeft() {
-    setState(() {
-      _lookLeft = true;
-    });
+  // Layout constants
+  static const double _knightWidth = 116;
+  static const double _knightHeight = 74;
+  static const double _balloonOffsetX = -15;
+  static const double _balloonOffsetY = -6;
+  static const double _balloonMaxWidth = 182;
+
+  @override
+  void initState() {
+    super.initState();
+    changeMessage("I Will Defeat Your Worst Taskmares...");
   }
 
-  void lookRight() {
-    setState(() {
-      _lookLeft = false;
-    });
-  }
-
-  void changeStatus() {
-    setState(() {
-      _status = _status == 'Attack' ? 'Idle' : 'Attack';
-    });
-  }
-
-  void attack() {
-    setState(() {
-      _status = 'Attack';
-    });
-  }
-
-  void idle() {
-    setState(() {
-      _status = 'Idle';
-    });
-  }
+  // Public API
+  void lookLeft() => setState(() => _lookLeft = true);
+  void lookRight() => setState(() => _lookLeft = false);
+  void attack() => setState(() => _status = KnightStatus.attack);
+  void idle() => setState(() => _status = KnightStatus.idle);
 
   void changeMessage(String newMessage) {
-    _typingTimer?.cancel();
-    _dotTimer?.cancel();
-    _clearTimer?.cancel();
-
-    setState(() {
-      _message = '';
-    });
+    resetMessageTimers();
+    setState(() => _message = '');
 
     _typingTimer = Timer.periodic(Duration(milliseconds: 300), (timer) {
       if (_message.length < newMessage.length) {
@@ -69,80 +59,93 @@ class KnightState extends State<Knight> {
           if (_message.endsWith('...')) {
             dotTimer.cancel();
             _clearTimer = Timer(Duration(seconds: 10), () {
-              setState(() {
-                _message = '';
-              });
+              setState(() => _message = '');
             });
           } else {
-            setState(() {
-              _message += '.';
-            });
+            setState(() => _message += '.');
           }
         });
       }
     });
   }
 
-  @override
-  void dispose() {
+  // Internals
+  void resetMessageTimers() {
     _typingTimer?.cancel();
     _dotTimer?.cancel();
     _clearTimer?.cancel();
-    super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
+  Widget _buildKnightImage() {
+    return Transform(
       alignment: Alignment.center,
-      children: [
-        SizedBox.expand(
-          child: FittedBox(
-            fit: BoxFit.cover,
-            child: Transform(
-              alignment: Alignment.center,
-              transform: _lookLeft
-                  ? (Matrix4.identity()..scale(-1.0, 1.0))
-                  : Matrix4.identity(),
-              child: Image.asset(
-                'assets/images/Warrior$_status.gif',
-              ),
-            ),
-          ),
-        ),
-        if (_message.isNotEmpty)
-          Positioned(
-            top: 0,
-            child: Opacity(
-              opacity: 0.7,
-              child: IntrinsicWidth(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 182),
-                  child: Container(
-                    height: 39,
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      _message,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontFamily: 'VCR_OSD_MONO',
-                        height: 1.3,
-                      ),
-                    ),
+      transform: _lookLeft
+          ? (Matrix4.identity()..scale(-1.0, 1.0))
+          : Matrix4.identity(),
+      child: Image.asset(
+        'assets/images/Warrior${_status.name.capitalize()}.gif',
+        width: _knightWidth,
+        height: _knightHeight,
+        fit: BoxFit.fill,
+        filterQuality: FilterQuality.none,
+      ),
+    );
+  }
+
+  Widget _buildMessageBubble() {
+    return Positioned(
+      bottom: _knightHeight,
+      left: 0,
+      right: 0,
+      child: Transform.translate(
+        offset: Offset(_balloonOffsetX, _balloonOffsetY),
+        child: Opacity(
+          opacity: 0.85,
+          child: IntrinsicWidth(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: _balloonMaxWidth),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  _message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontFamily: 'VCR_OSD_MONO',
+                    height: 1.3,
                   ),
                 ),
               ),
             ),
           ),
-      ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    resetMessageTimers();
+    super.dispose();
+  }
+
+  // Widget size: 116x74 (from Figma)
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          _buildKnightImage(),
+          if (_message.isNotEmpty) _buildMessageBubble(),
+        ],
+      ),
     );
   }
 }

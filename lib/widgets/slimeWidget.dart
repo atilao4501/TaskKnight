@@ -13,7 +13,6 @@ class SlimeWidget extends StatefulWidget {
 class SlimeState extends State<SlimeWidget> {
   bool spawned = true;
   String color = 'Red';
-  double slimePositionRight = 0;
   double valueToMove = 0;
 
   Future<bool> spawnSlime(String color, bool spawnInTheRight) async {
@@ -22,47 +21,48 @@ class SlimeState extends State<SlimeWidget> {
       spawned = true;
     });
 
-    final screenWidth = MediaQuery.of(context).size.width;
-    final unit = screenWidth * 0.0254;
+    const double canvasWidth = 393.0;
+    const double slimeWidth = 60.0;
+    const double targetX = (canvasWidth / 2) - (slimeWidth / 2);
+    const double step = 0.5;
+    const Duration frameDelay = Duration(milliseconds: 30); // ~33fps
 
     if (spawnInTheRight) {
-      valueToMove = unit * 48;
+      valueToMove = canvasWidth;
 
-      while (spawned && valueToMove > 0) {
-        await Future.delayed(const Duration(seconds: 1));
+      while (spawned && valueToMove > targetX) {
+        await Future.delayed(frameDelay);
 
         setState(() {
-          valueToMove -= unit;
+          valueToMove -= step;
 
-          if (screenWidth * 0.80 > valueToMove) {
+          if (valueToMove <= targetX + 65) {
             KnightController.knightStateKey.currentState?.lookRight();
             KnightController.knightStateKey.currentState?.attack();
           }
 
-          if (screenWidth * 0.75 > valueToMove) {
+          if (valueToMove <= targetX + 25) {
             spawned = false;
-            valueToMove = screenWidth;
             KnightController.knightStateKey.currentState?.idle();
           }
         });
       }
     } else {
-      valueToMove = unit * 4;
+      valueToMove = -slimeWidth;
 
-      while (spawned && valueToMove < screenWidth) {
-        await Future.delayed(const Duration(seconds: 1));
+      while (spawned && valueToMove < targetX) {
+        await Future.delayed(frameDelay);
 
         setState(() {
-          valueToMove += unit;
+          valueToMove += step;
 
-          if (screenWidth * 0.45 < valueToMove) {
+          if (valueToMove >= targetX - 65) {
             KnightController.knightStateKey.currentState?.lookLeft();
             KnightController.knightStateKey.currentState?.attack();
           }
 
-          if (screenWidth * 0.55 < valueToMove) {
+          if (valueToMove >= targetX - 25) {
             spawned = false;
-            valueToMove = 0;
             KnightController.knightStateKey.currentState?.idle();
             KnightController.knightStateKey.currentState?.lookRight();
           }
@@ -94,15 +94,28 @@ class SlimeState extends State<SlimeWidget> {
       children: [
         if (spawned)
           Positioned(
-            bottom: MediaQuery.of(context).size.height * 0.15,
-            right: MediaQuery.of(context).size.width - valueToMove,
-            child: SizedBox(
-              height: 100.0,
-              child: FittedBox(
-                child: Image.asset(
-                  'assets/images/Run${color}Slime.gif',
+            top: 658,
+            left: valueToMove,
+            child: Column(
+              children: [
+                Text(
+                  'Task1',
+                  style: TextStyle(
+                    color: Color(0xFFFFE100),
+                    fontSize: 12,
+                    fontFamily: 'VCR OSD Mono',
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-              ),
+                SizedBox(
+                  width: 60,
+                  height: 34,
+                  child: Image.asset(
+                    'assets/images/Run${color}SlimeCrop.gif',
+                    filterQuality: FilterQuality.none,
+                  ),
+                ),
+              ],
             ),
           ),
       ],

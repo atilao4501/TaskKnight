@@ -3,6 +3,7 @@ import 'package:task_knight_alpha/controllers/knightController.dart';
 import 'package:task_knight_alpha/pages/home_page.dart';
 import 'package:task_knight_alpha/pages/onboarding_page.dart';
 import 'package:task_knight_alpha/widgets/knightBackground.dart';
+import 'package:task_knight_alpha/widgets/virtual_screen.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({super.key});
@@ -16,21 +17,25 @@ class _MainWrapperState extends State<MainWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return Knightbackground(
-      key: KnightController.knighBackgroundtKey, // ⚠️ Apenas UMA VEZ!
-      child: Navigator(
-        key: navigatorKey,
-        onGenerateRoute: (_) {
-          return MaterialPageRoute(
-            builder: (_) => OnboardingPage(
-              onStart: () {
-                navigatorKey.currentState!.push(
-                  MaterialPageRoute(builder: (_) => HomePage()),
-                );
-              },
-            ),
-          );
-        },
+    return VirtualScreen(
+      child: Knightbackground(
+        key: KnightController.knighBackgroundtKey,
+        child: Navigator(
+          key: navigatorKey,
+          onGenerateRoute: (_) {
+            return MaterialPageRoute(
+              builder: (_) => OnboardingPage(
+                onStart: () {
+                  KnightController.knighBackgroundtKey.currentState
+                      ?.setBlur(true);
+                  navigatorKey.currentState!.push(
+                    MaterialPageRoute(builder: (_) => HomePage()),
+                  );
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

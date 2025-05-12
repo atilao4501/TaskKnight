@@ -4,20 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:task_knight_alpha/wrappers/main_wrapper.dart';
 import 'package:window_manager/window_manager.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  if (Platform.isMacOS) {
-    await windowManager.ensureInitialized();
-    windowManager.waitUntilReadyToShow().then((_) async {
-      await windowManager.setSize(const Size(393, 852));
-      await windowManager.setResizable(false);
-      await windowManager.setTitle('Task Knight');
-      await windowManager.show();
-      await windowManager.focus();
-    });
-  }
-
   runApp(const MyApp());
 }
 

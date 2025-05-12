@@ -50,6 +50,9 @@ class OnboardingPage extends StatelessWidget {
           Center(
             child: ElevatedButton(
               onPressed: onStart,
+              // onPressed: () {
+              //   KnightController.knighBackgroundtKey.currentState?.spawnSlime();
+              // },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,

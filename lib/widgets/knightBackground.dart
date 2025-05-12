@@ -1,43 +1,50 @@
-import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'package:task_knight_alpha/controllers/knightController.dart';
 import 'package:task_knight_alpha/widgets/knight.dart';
+import 'package:flutter/material.dart';
 import 'package:task_knight_alpha/widgets/slimeWidget.dart';
 
 class Knightbackground extends StatefulWidget {
   final Widget child;
 
-  Knightbackground({super.key, required this.child});
-
-  List<GlobalKey<SlimeState>> slimeKeys = [];
-  List<SlimeWidget> slimeWidgets = [];
-  var slimeKey = GlobalKey<SlimeState>();
+  const Knightbackground({super.key, required this.child});
 
   @override
-  State<StatefulWidget> createState() => KnightbackgroundState();
+  State<Knightbackground> createState() => KnightbackgroundState();
 }
 
 class KnightbackgroundState extends State<Knightbackground> {
+  bool _blurBackground = false;
+  List<GlobalKey<SlimeState>> slimeKeys = [];
+  List<SlimeWidget> slimeWidgets = [];
+
+  void setBlur(bool value) {
+    setState(() {
+      _blurBackground = value;
+    });
+  }
+
   Future<void> spawnSlime() async {
     final newKey = GlobalKey<SlimeState>();
     final slime = SlimeWidget(key: newKey);
 
     setState(() {
-      widget.slimeWidgets.add(slime);
-      widget.slimeKeys.add(newKey);
+      slimeWidgets.add(slime);
+      slimeKeys.add(newKey);
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final colors = ['Red', 'Green', 'Blue'];
       final randomColor = (colors..shuffle()).first;
       final randomBool =
-          (List<bool>.generate(2, (index) => index == 0)..shuffle()).first;
+          (List<bool>.generate(2, (i) => i == 0)..shuffle()).first;
 
       final completed =
           await newKey.currentState?.spawnSlime(randomColor, randomBool);
       if (completed == true) {
         setState(() {
-          widget.slimeKeys.remove(newKey);
-          widget.slimeWidgets.remove(slime);
+          slimeKeys.remove(newKey);
+          slimeWidgets.remove(slime);
         });
       }
     });
@@ -48,27 +55,38 @@ class KnightbackgroundState extends State<Knightbackground> {
     return Stack(
       children: [
         Positioned.fill(
-          child: Image.asset(
-            'assets/images/forestBackgroundWide.png',
-            fit: BoxFit.none,
-            alignment: Alignment(0.3, 0.5),
-          ),
+          child: _blurBackground
+              ? ImageFiltered(
+                  imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                  child: Image.asset(
+                    'assets/images/forestBackground.png',
+                    fit: BoxFit.fill,
+                    filterQuality: FilterQuality.none,
+                  ),
+                )
+              : Image.asset(
+                  'assets/images/forestBackground.png',
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.none,
+                ),
         ),
+
+        // Guerreiro fixo na base, centralizado
         Positioned(
-          bottom: MediaQuery.of(context).size.height * 0.15,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: SizedBox(
-              width: 115,
-              height: 115,
-              child: Knight(
-                key: KnightController.knightStateKey,
-              ),
-            ),
-          ),
+          top: 642,
+          left: 157,
+          child: _blurBackground
+              ? ImageFiltered(
+                  imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+                  child: Knight(key: KnightController.knightStateKey),
+                )
+              : Knight(key: KnightController.knightStateKey),
         ),
-        ...widget.slimeWidgets,
+
+        // Slimes dinâmicos
+        ...slimeWidgets,
+
+        // Interface da tela
         widget.child,
       ],
     );
