@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_knight_alpha/controllers/knightController.dart';
+import 'package:task_knight_alpha/pages/addTask_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -98,7 +99,14 @@ class HomePage extends StatelessWidget {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddTaskPage(),
+                        ),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFBDA274),
                       shape: RoundedRectangleBorder(
