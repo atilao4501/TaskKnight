@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:task_knight_alpha/controllers/knightController.dart';
-import 'package:task_knight_alpha/pages/addTask_page.dart';
+import 'package:task_knight_alpha/pages/add_task_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
