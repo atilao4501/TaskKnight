@@ -11,7 +11,9 @@ import '../widgets/custom_back_button.dart' as custom;
 import '../widgets/accept_button.dart';
 
 class AddTaskPage extends StatefulWidget {
-  const AddTaskPage({super.key});
+  final Task? task;
+
+  const AddTaskPage({super.key, this.task});
 
   @override
   State<AddTaskPage> createState() => _AddTaskPageState();
@@ -22,6 +24,15 @@ class _AddTaskPageState extends State<AddTaskPage> {
   final TextEditingController _descriptionController = TextEditingController();
   AiRecommendation? _aiRecommendation;
   bool _isLoadingAI = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.task != null) {
+      _titleController.text = widget.task!.title;
+      _descriptionController.text = widget.task!.description;
+    }
+  }
 
   @override
   void dispose() {
@@ -98,21 +109,29 @@ class _AddTaskPageState extends State<AddTaskPage> {
     }
   }
 
-  // Mock da função de salvar tarefa
-  Future<void> _saveTask() async {
-    final random = Random();
-    final slimeColors = SlimeColor.values;
-    final selectedSlimeColor = slimeColors[random.nextInt(slimeColors.length)];
-
-    final newTask = Task(
-      title: _titleController.text.trim(),
-      description: _descriptionController.text.trim(),
-      slimeColor: selectedSlimeColor,
-      isCompleted: false,
-    );
-
+  // Salva ou atualiza a tarefa
+  Future<void> _saveOrUpdateTask() async {
     final box = await Hive.openBox<Task>('tasks');
-    await box.add(newTask);
+
+    if (widget.task == null) {
+      final random = Random();
+      final slimeColors = SlimeColor.values;
+      final selectedSlimeColor =
+          slimeColors[random.nextInt(slimeColors.length)];
+
+      final newTask = Task(
+        title: _titleController.text.trim(),
+        description: _descriptionController.text.trim(),
+        slimeColor: selectedSlimeColor,
+        isCompleted: false,
+      );
+
+      await box.add(newTask);
+    } else {
+      widget.task!.title = _titleController.text.trim();
+      widget.task!.description = _descriptionController.text.trim();
+      await widget.task!.save();
+    }
 
     Navigator.pop(context);
   }
@@ -183,7 +202,10 @@ class _AddTaskPageState extends State<AddTaskPage> {
 
                               // Botão Accept
                               AcceptButton(
-                                onPressed: _saveTask,
+                                onPressed: _saveOrUpdateTask,
+                                label: widget.task == null
+                                    ? 'Salvar'
+                                    : 'Atualizar',
                               ),
                             ],
                           ),

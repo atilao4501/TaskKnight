@@ -3,8 +3,6 @@ import 'package:task_knight_alpha/controllers/knightController.dart';
 import 'package:task_knight_alpha/pages/add_task_page.dart';
 import 'package:task_knight_alpha/models/task.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:task_knight_alpha/widgets/knightBackground.dart';
-import 'package:task_knight_alpha/widgets/slimeWidget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -228,18 +226,23 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        // TODO: Implement edit functionality
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddTaskPage(task: task),
+                          ),
+                        );
                       },
                       child: Image.asset("assets/images/penButton.png",
                           width: 40, height: 40),
                     ),
                     SizedBox(width: 30),
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         KnightController.knightBackgroundKey.currentState
-                            ?.spawnSlime(task.slimeColor.name[0].toUpperCase() +
-                                task.slimeColor.name.substring(1));
-                        task.delete();
+                            ?.spawnSlime(task);
+                        task.isCompleted = true;
+                        await task.save();
                       },
                       child: Image.asset("assets/images/skullButton.png",
                           width: 40, height: 40),

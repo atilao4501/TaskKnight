@@ -22,16 +22,16 @@ extension StringExtension on String {
 @HiveType(typeId: 1)
 class Task extends HiveObject {
   @HiveField(0)
-  final String title;
+  String title;
 
   @HiveField(1)
-  final String description;
+  String description;
 
   @HiveField(2)
-  final SlimeColor slimeColor;
+  SlimeColor slimeColor;
 
   @HiveField(3)
-  final bool isCompleted;
+  bool isCompleted;
 
   Task({
     required this.title,

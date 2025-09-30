@@ -13,10 +13,13 @@ class SlimeWidget extends StatefulWidget {
 class SlimeState extends State<SlimeWidget> {
   bool spawned = true;
   String color = 'Red';
+  String title = 'Task1';
   double valueToMove = 0;
 
-  Future<bool> spawnSlime(String color, bool spawnInTheRight) async {
+  Future<bool> spawnSlime(
+      String color, String title, bool spawnInTheRight) async {
     setState(() {
+      this.title = title;
       this.color = color;
       spawned = true;
     });
@@ -99,7 +102,7 @@ class SlimeState extends State<SlimeWidget> {
             child: Column(
               children: [
                 Text(
-                  'Task1',
+                  title,
                   style: TextStyle(
                     color: Color(0xFFFFE100),
                     fontSize: 12,

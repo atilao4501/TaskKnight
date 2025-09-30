@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:task_knight_alpha/controllers/knightController.dart';
+import 'package:task_knight_alpha/models/task.dart';
 import 'package:task_knight_alpha/widgets/knight.dart';
 import 'package:flutter/material.dart';
 import 'package:task_knight_alpha/widgets/slimeWidget.dart';
@@ -24,7 +25,10 @@ class KnightbackgroundState extends State<Knightbackground> {
     });
   }
 
-  Future<void> spawnSlime(String color) async {
+  Future<void> spawnSlime(Task task) async {
+    final color = task.slimeColor.name[0].toUpperCase() +
+        task.slimeColor.name.substring(1);
+
     final newKey = GlobalKey<SlimeState>();
     final slime = SlimeWidget(key: newKey);
 
@@ -38,7 +42,7 @@ class KnightbackgroundState extends State<Knightbackground> {
           (List<bool>.generate(2, (i) => i == 0)..shuffle()).first;
 
       final completed =
-          await newKey.currentState?.spawnSlime(color, randomBool);
+          await newKey.currentState?.spawnSlime(color, task.title, randomBool);
       if (completed == true) {
         setState(() {
           slimeKeys.remove(newKey);

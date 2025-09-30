@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class AcceptButton extends StatelessWidget {
   final VoidCallback onPressed;
+  final String label;
 
   const AcceptButton({
     super.key,
     required this.onPressed,
+    this.label = 'Accept',
   });
 
   @override
@@ -26,10 +28,10 @@ class AcceptButton extends StatelessWidget {
             ),
           ],
         ),
-        child: const Center(
+        child: Center(
           child: Text(
-            'Accept',
-            style: TextStyle(
+            label,
+            style: const TextStyle(
               fontFamily: 'VCR_OSD_MONO',
               fontSize: 16,
               color: Colors.white,
