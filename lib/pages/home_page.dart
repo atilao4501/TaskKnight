@@ -1,8 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:task_knight_alpha/pages/add_task_page.dart';
+import 'package:task_knight_alpha/models/task.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomePage extends StatefulWidget {
+  HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final List<Task> tasks = [
+    Task(
+      title: 'Task1',
+      description:
+          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
+      slimeColor: SlimeColor.green,
+    ),
+    Task(
+      title: 'Task2',
+      description:
+          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
+      slimeColor: SlimeColor.red,
+    ),
+    Task(
+      title: 'Task3',
+      description:
+          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
+      slimeColor: SlimeColor.blue,
+    ),
+    Task(
+      title: 'Task4',
+      description:
+          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
+      slimeColor: SlimeColor.green,
+    ),
+    Task(
+      title: 'Task5',
+      description:
+          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
+      slimeColor: SlimeColor.red,
+    ),
+    Task(
+      title: 'Task6',
+      description:
+          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
+      slimeColor: SlimeColor.blue,
+    ),
+    Task(
+      title: 'Task7',
+      description:
+          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
+      slimeColor: SlimeColor.green,
+    ),
+    Task(
+      title: 'Task8',
+      description:
+          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
+      slimeColor: SlimeColor.red,
+    ),
+  ];
+
+  late final PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 1);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,29 +140,48 @@ class HomePage extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.all(12),
                 child: PageView.builder(
-                  itemCount: (8 / 4).ceil(),
-                  controller: PageController(viewportFraction: 1),
+                  itemCount: (tasks.length / 4).ceil(),
+                  controller: _pageController,
                   scrollDirection: Axis.horizontal,
+                  onPageChanged: (index) =>
+                      setState(() => _currentPage = index),
                   itemBuilder: (context, pageIndex) {
                     final start = pageIndex * 4;
-                    final end = (start + 4).clamp(0, 8);
-                    final tasks = List.generate(
-                        end - start, (i) => _buildTaskCard(context));
+                    final end = (start + 4).clamp(0, tasks.length).toInt();
+                    final pageTasks = tasks.sublist(start, end);
+                    final taskCards = pageTasks
+                        .map((task) => _buildTaskCard(context, task))
+                        .toList();
                     return Center(
                       child: GridView.count(
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
                         crossAxisCount: 2,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
                         childAspectRatio: 164 / 184,
-                        children: tasks,
+                        children: taskCards,
                       ),
                     );
                   },
                 ),
               ),
             ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate((tasks.length / 4).ceil(), (index) {
+              return Container(
+                width: 8,
+                height: 8,
+                margin: EdgeInsets.symmetric(horizontal: 4),
+                decoration: BoxDecoration(
+                  color: index == _currentPage
+                      ? Colors.yellow.shade700
+                      : Colors.black54,
+                  shape: BoxShape.circle,
+                ),
+              );
+            }),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
@@ -138,7 +229,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildTaskCard(BuildContext context) {
+  Widget _buildTaskCard(BuildContext context, Task task) {
     return SizedBox(
       width: 164,
       height: 184,
@@ -168,7 +259,7 @@ class HomePage extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
+                  task.description,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 7,
@@ -185,7 +276,7 @@ class HomePage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "Task1",
+                  task.title,
                   style: TextStyle(
                     fontSize: 9,
                     color: Color(0xFFFFE100),
@@ -194,7 +285,7 @@ class HomePage extends StatelessWidget {
                 ),
                 SizedBox(height: 2),
                 Image.asset(
-                  "assets/images/RunGreenSlimeCrop.gif",
+                  task.slimeAsset,
                   width: 60,
                   height: 34,
                   filterQuality: FilterQuality.none,
