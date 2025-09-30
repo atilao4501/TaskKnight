@@ -1,6 +1,9 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import '../services/groq_ai_service.dart';
 import '../models/ai_recommendation.dart';
+import '../models/task.dart';
 import '../widgets/title_input_field.dart';
 import '../widgets/description_input_field.dart';
 import '../widgets/ai_recommendation_section.dart';
@@ -96,8 +99,21 @@ class _AddTaskPageState extends State<AddTaskPage> {
   }
 
   // Mock da função de salvar tarefa
-  void _saveTask() {
-    // Aqui você implementará a lógica de salvar a tarefa
+  Future<void> _saveTask() async {
+    final random = Random();
+    final slimeColors = SlimeColor.values;
+    final selectedSlimeColor = slimeColors[random.nextInt(slimeColors.length)];
+
+    final newTask = Task(
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim(),
+      slimeColor: selectedSlimeColor,
+      isCompleted: false,
+    );
+
+    final box = await Hive.openBox<Task>('tasks');
+    await box.add(newTask);
+
     Navigator.pop(context);
   }
 

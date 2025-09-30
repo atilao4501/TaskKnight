@@ -24,7 +24,7 @@ class KnightbackgroundState extends State<Knightbackground> {
     });
   }
 
-  Future<void> spawnSlime() async {
+  Future<void> spawnSlime(String color) async {
     final newKey = GlobalKey<SlimeState>();
     final slime = SlimeWidget(key: newKey);
 
@@ -34,13 +34,11 @@ class KnightbackgroundState extends State<Knightbackground> {
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final colors = ['Red', 'Green', 'Blue'];
-      final randomColor = (colors..shuffle()).first;
       final randomBool =
           (List<bool>.generate(2, (i) => i == 0)..shuffle()).first;
 
       final completed =
-          await newKey.currentState?.spawnSlime(randomColor, randomBool);
+          await newKey.currentState?.spawnSlime(color, randomBool);
       if (completed == true) {
         setState(() {
           slimeKeys.remove(newKey);
@@ -58,33 +56,38 @@ class KnightbackgroundState extends State<Knightbackground> {
           child: _blurBackground
               ? ImageFiltered(
                   imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                  child: Image.asset(
-                    'assets/images/forestBackground.png',
-                    fit: BoxFit.fill,
-                    filterQuality: FilterQuality.none,
+                  child: Stack(
+                    children: [
+                      Image.asset(
+                        'assets/images/forestBackground.png',
+                        fit: BoxFit.fill,
+                        filterQuality: FilterQuality.none,
+                      ),
+                      Positioned(
+                        top: 642,
+                        left: 157,
+                        child: Knight(key: KnightController.knightStateKey),
+                      ),
+                      ...slimeWidgets,
+                    ],
                   ),
                 )
-              : Image.asset(
-                  'assets/images/forestBackground.png',
-                  fit: BoxFit.fill,
-                  filterQuality: FilterQuality.none,
+              : Stack(
+                  children: [
+                    Image.asset(
+                      'assets/images/forestBackground.png',
+                      fit: BoxFit.fill,
+                      filterQuality: FilterQuality.none,
+                    ),
+                    Positioned(
+                      top: 642,
+                      left: 157,
+                      child: Knight(key: KnightController.knightStateKey),
+                    ),
+                    ...slimeWidgets,
+                  ],
                 ),
         ),
-
-        // Guerreiro fixo na base, centralizado
-        Positioned(
-          top: 642,
-          left: 157,
-          child: _blurBackground
-              ? ImageFiltered(
-                  imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-                  child: Knight(key: KnightController.knightStateKey),
-                )
-              : Knight(key: KnightController.knightStateKey),
-        ),
-
-        // Slimes dinâmicos
-        ...slimeWidgets,
 
         // Interface da tela
         widget.child,

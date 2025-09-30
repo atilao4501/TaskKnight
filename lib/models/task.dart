@@ -1,4 +1,16 @@
-enum SlimeColor { red, green, blue }
+import 'package:hive/hive.dart';
+
+part 'task.g.dart';
+
+@HiveType(typeId: 0)
+enum SlimeColor {
+  @HiveField(0)
+  red,
+  @HiveField(1)
+  green,
+  @HiveField(2)
+  blue
+}
 
 extension StringExtension on String {
   String capitalize() {
@@ -7,10 +19,18 @@ extension StringExtension on String {
   }
 }
 
-class Task {
+@HiveType(typeId: 1)
+class Task extends HiveObject {
+  @HiveField(0)
   final String title;
+
+  @HiveField(1)
   final String description;
+
+  @HiveField(2)
   final SlimeColor slimeColor;
+
+  @HiveField(3)
   final bool isCompleted;
 
   Task({

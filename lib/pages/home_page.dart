@@ -1,67 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:task_knight_alpha/controllers/knightController.dart';
 import 'package:task_knight_alpha/pages/add_task_page.dart';
 import 'package:task_knight_alpha/models/task.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:task_knight_alpha/widgets/knightBackground.dart';
+import 'package:task_knight_alpha/widgets/slimeWidget.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<Task> tasks = [
-    Task(
-      title: 'Task1',
-      description:
-          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
-      slimeColor: SlimeColor.green,
-    ),
-    Task(
-      title: 'Task2',
-      description:
-          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
-      slimeColor: SlimeColor.red,
-    ),
-    Task(
-      title: 'Task3',
-      description:
-          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
-      slimeColor: SlimeColor.blue,
-    ),
-    Task(
-      title: 'Task4',
-      description:
-          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
-      slimeColor: SlimeColor.green,
-    ),
-    Task(
-      title: 'Task5',
-      description:
-          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
-      slimeColor: SlimeColor.red,
-    ),
-    Task(
-      title: 'Task6',
-      description:
-          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
-      slimeColor: SlimeColor.blue,
-    ),
-    Task(
-      title: 'Task7',
-      description:
-          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
-      slimeColor: SlimeColor.green,
-    ),
-    Task(
-      title: 'Task8',
-      description:
-          'Lorem ipsum arcu a cursus in imperdiet viverra tincidunt justo sed sit magna mauris lacus sodales erat in placerat ullamcorper suspendisse risus proin facilisis fermentum elit blandit orci volutpat tristique risus.',
-      slimeColor: SlimeColor.red,
-    ),
-  ];
-
   late final PageController _pageController;
+
   int _currentPage = 0;
 
   @override
@@ -139,49 +93,71 @@ class _HomePageState extends State<HomePage> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 padding: const EdgeInsets.all(12),
-                child: PageView.builder(
-                  itemCount: (tasks.length / 4).ceil(),
-                  controller: _pageController,
-                  scrollDirection: Axis.horizontal,
-                  onPageChanged: (index) =>
-                      setState(() => _currentPage = index),
-                  itemBuilder: (context, pageIndex) {
-                    final start = pageIndex * 4;
-                    final end = (start + 4).clamp(0, tasks.length).toInt();
-                    final pageTasks = tasks.sublist(start, end);
-                    final taskCards = pageTasks
-                        .map((task) => _buildTaskCard(context, task))
+                child: ValueListenableBuilder(
+                  valueListenable: Hive.box<Task>('tasks').listenable(),
+                  builder: (context, Box<Task> box, _) {
+                    final allTasks = box.values.toList();
+                    final filteredTasks = allTasks
+                        .where((task) => task.isCompleted == false)
                         .toList();
-                    return Center(
-                      child: GridView.count(
-                        shrinkWrap: true,
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 164 / 184,
-                        children: taskCards,
-                      ),
+                    final pageCount = (filteredTasks.length / 4).ceil();
+
+                    return PageView.builder(
+                      itemCount: pageCount,
+                      controller: _pageController,
+                      scrollDirection: Axis.horizontal,
+                      onPageChanged: (index) =>
+                          setState(() => _currentPage = index),
+                      itemBuilder: (context, pageIndex) {
+                        final start = pageIndex * 4;
+                        final end =
+                            (start + 4).clamp(0, filteredTasks.length).toInt();
+                        final pageTasks = filteredTasks.sublist(start, end);
+                        final taskCards = pageTasks
+                            .map((task) => _buildTaskCard(context, task))
+                            .toList();
+                        return Center(
+                          child: GridView.count(
+                            shrinkWrap: true,
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 164 / 184,
+                            children: taskCards,
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
               ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate((tasks.length / 4).ceil(), (index) {
-              return Container(
-                width: 8,
-                height: 8,
-                margin: EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  color: index == _currentPage
-                      ? Colors.yellow.shade700
-                      : Colors.black54,
-                  shape: BoxShape.circle,
-                ),
+          ValueListenableBuilder(
+            valueListenable: Hive.box<Task>('tasks').listenable(),
+            builder: (context, Box<Task> box, _) {
+              final allTasks = box.values.toList();
+              final filteredTasks =
+                  allTasks.where((task) => task.isCompleted == false).toList();
+              final pageCount = (filteredTasks.length / 4).ceil();
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(pageCount, (index) {
+                  return Container(
+                    width: 8,
+                    height: 8,
+                    margin: EdgeInsets.symmetric(horizontal: 4),
+                    decoration: BoxDecoration(
+                      color: index == _currentPage
+                          ? Colors.yellow.shade700
+                          : Colors.black54,
+                      shape: BoxShape.circle,
+                    ),
+                  );
+                }),
               );
-            }),
+            },
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
@@ -250,11 +226,24 @@ class _HomePageState extends State<HomePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset("assets/images/penButton.png",
-                        width: 40, height: 40),
+                    GestureDetector(
+                      onTap: () {
+                        // TODO: Implement edit functionality
+                      },
+                      child: Image.asset("assets/images/penButton.png",
+                          width: 40, height: 40),
+                    ),
                     SizedBox(width: 30),
-                    Image.asset("assets/images/skullButton.png",
-                        width: 40, height: 40),
+                    GestureDetector(
+                      onTap: () {
+                        KnightController.knightBackgroundKey.currentState
+                            ?.spawnSlime(task.slimeColor.name[0].toUpperCase() +
+                                task.slimeColor.name.substring(1));
+                        task.delete();
+                      },
+                      child: Image.asset("assets/images/skullButton.png",
+                          width: 40, height: 40),
+                    ),
                   ],
                 ),
                 SizedBox(height: 8),
@@ -275,12 +264,19 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  task.title,
-                  style: TextStyle(
-                    fontSize: 9,
-                    color: Color(0xFFFFE100),
-                    fontWeight: FontWeight.w500,
+                Container(
+                  alignment: Alignment.center,
+                  width: 164,
+                  child: Text(
+                    task.title,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: Color(0xFFFFE100),
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
                 SizedBox(height: 2),

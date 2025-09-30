@@ -1,11 +1,19 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:task_knight_alpha/models/task.dart';
 import 'package:task_knight_alpha/wrappers/main_wrapper.dart';
-import 'package:window_manager/window_manager.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+
+  Hive.registerAdapter(SlimeColorAdapter());
+  Hive.registerAdapter(TaskAdapter());
+
+  await Hive.openBox<Task>('tasks');
+
   runApp(const MyApp());
 }
 

@@ -19,14 +19,14 @@ class _MainWrapperState extends State<MainWrapper> {
   Widget build(BuildContext context) {
     return VirtualScreen(
       child: Knightbackground(
-        key: KnightController.knighBackgroundtKey,
+        key: KnightController.knightBackgroundKey,
         child: Navigator(
           key: navigatorKey,
           onGenerateRoute: (_) {
             return MaterialPageRoute(
               builder: (_) => OnboardingPage(
                 onStart: () {
-                  KnightController.knighBackgroundtKey.currentState
+                  KnightController.knightBackgroundKey.currentState
                       ?.setBlur(true);
                   navigatorKey.currentState!.push(
                     MaterialPageRoute(builder: (_) => HomePage()),
