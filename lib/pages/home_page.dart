@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:task_knight_alpha/controllers/knightController.dart';
 import 'package:task_knight_alpha/pages/add_task_page.dart';
+import 'package:task_knight_alpha/pages/settings_page.dart';
 import 'package:task_knight_alpha/models/task.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -184,7 +185,14 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SettingsPage(),
+                        ),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFBDA274),
                       shape: RoundedRectangleBorder(
