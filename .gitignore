@@ -53,6 +53,9 @@ android/app/debug/
 android/app/profile/
 android/app/release/
 
+# Android NDK / C++ build artifacts
+android/.cxx/
+
 # macOS
 .fvm/
 .metadata/
