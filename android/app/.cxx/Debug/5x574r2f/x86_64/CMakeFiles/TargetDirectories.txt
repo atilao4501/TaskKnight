@@ -1,0 +1,2 @@
+/Users/atilaalcantara/Documents/Estudos/TCC/TaskKnight/android/app/.cxx/Debug/5x574r2f/x86_64/CMakeFiles/edit_cache.dir
+/Users/atilaalcantara/Documents/Estudos/TCC/TaskKnight/android/app/.cxx/Debug/5x574r2f/x86_64/CMakeFiles/rebuild_cache.dir
