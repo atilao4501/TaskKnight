@@ -66,8 +66,6 @@ class NotificationSoundService {
   static Future<String?> _prepareIOSSound(String soundName) async {
     try {
       // Para iOS/macOS, podemos usar MP3 diretamente dos assets
-      // Ou converter para AIFF se necessário
-
       // Verificar se arquivo existe nos assets
       try {
         await rootBundle.load('assets/sounds/$soundName.mp3');
@@ -76,7 +74,30 @@ class NotificationSoundService {
           print('✅ Som iOS/macOS encontrado: assets/sounds/$soundName.mp3');
         }
 
-        // iOS pode usar MP3 diretamente dos assets (iOS 9+)
+        // Para macOS, usar sons específicos do sistema
+        if (defaultTargetPlatform == TargetPlatform.macOS) {
+          // Lista de sons disponíveis no macOS (ordem de recomendação para TaskKnight)
+          const availableSounds = [
+            'Hero', // 🦸 Som épico - perfeito para tarefas heroicas!
+            'Sosumi', // 🔔 Som clássico do Mac
+            'Glass', // ✨ Som cristalino
+            'Tink', // 🎵 Som sutil mas distinctivo
+            'Ping', // 📬 Som simples
+            'Pop', // 💫 Som de bolha
+          ];
+
+          // Som atual - mude aqui para trocar o som!
+          const currentSound = 'Hero'; // 🎯 Troque por qualquer da lista acima
+
+          if (kDebugMode) {
+            print('🍎 macOS: Usando som "$currentSound"');
+            print('🎵 Outros disponíveis: ${availableSounds.join(', ')}');
+          }
+
+          return currentSound;
+        }
+
+        // iOS pode usar MP3 diretamente
         return '$soundName.mp3';
       } catch (e) {
         if (kDebugMode) {
@@ -86,7 +107,7 @@ class NotificationSoundService {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('❌ Erro ao preparar som iOS: $e');
+        print('❌ Erro ao preparar som iOS/macOS: $e');
       }
       return null;
     }

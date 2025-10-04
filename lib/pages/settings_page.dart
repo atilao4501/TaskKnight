@@ -133,11 +133,8 @@ class _SettingsPageState extends State<SettingsPage> {
   /// 🔍 Mostra informações de diagnóstico das notificações
   Future<void> _showDiagnostics() async {
     try {
-      // Buscar status das notificações
+      // Buscar status das notificações (sem forçar sincronização)
       final status = await NotificationService.getNotificationStatus();
-
-      // Forçar sincronização
-      await NotificationService.forceSyncNotifications();
 
       if (mounted) {
         showDialog(
