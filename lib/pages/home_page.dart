@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:task_knight_alpha/controllers/knightController.dart';
 import 'package:task_knight_alpha/pages/add_task_page.dart';
 import 'package:task_knight_alpha/pages/settings_page.dart';
+import 'package:task_knight_alpha/pages/completed_tasks_page.dart';
 import 'package:task_knight_alpha/models/task.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -48,7 +49,7 @@ class _HomePageState extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 20),
+            padding: const EdgeInsets.only(top: 15, left: 20, right: 20),
             child: Center(
               child: Text(
                 'Wanderer',
@@ -82,6 +83,58 @@ class _HomePageState extends State<HomePage> {
                   ),
                 );
               }),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12, left: 20, right: 20),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CompletedTasksPage(),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFBDA274),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: Colors.black.withOpacity(0.4),
+                    width: 2,
+                  ),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                elevation: 4,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    'assets/images/bookIcon.png',
+                    width: 32,
+                    height: 32,
+                    filterQuality: FilterQuality.none,
+                  ),
+                  SizedBox(width: 12),
+                  Text(
+                    'Diary',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(1, 1),
+                          blurRadius: 0,
+                          color: Colors.black.withOpacity(0.3),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           Expanded(
