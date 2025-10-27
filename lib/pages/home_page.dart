@@ -17,6 +17,14 @@ class _HomePageState extends State<HomePage> {
   late final PageController _pageController;
 
   int _currentPage = 0;
+  bool _isUIHidden = false;
+
+  String _truncateText(String text, int maxChars) {
+    if (text.length <= maxChars) return text;
+    final cutIndex = text.lastIndexOf(' ', maxChars);
+    final end = cutIndex == -1 ? maxChars : cutIndex;
+    return text.substring(0, end).trimRight() + '...';
+  }
 
   @override
   void initState() {
@@ -34,10 +42,28 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          _buildContentHUD(context),
-        ],
+      body: GestureDetector(
+        onLongPressStart: (_) {
+          setState(() {
+            _isUIHidden = true;
+          });
+          KnightController.knightBackgroundKey.currentState?.setBlur(false);
+        },
+        onLongPressEnd: (_) {
+          setState(() {
+            _isUIHidden = false;
+          });
+          KnightController.knightBackgroundKey.currentState?.setBlur(true);
+        },
+        child: Stack(
+          children: [
+            AnimatedOpacity(
+              opacity: _isUIHidden ? 0.0 : 1.0,
+              duration: Duration(milliseconds: 200),
+              child: _buildContentHUD(context),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -312,10 +338,10 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  task.description,
+                  _truncateText(task.description, 100),
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 7,
+                    fontSize: 9,
                     height: 1.2,
                     color: Colors.white,
                   ),
