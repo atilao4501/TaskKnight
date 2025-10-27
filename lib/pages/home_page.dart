@@ -26,6 +26,107 @@ class _HomePageState extends State<HomePage> {
     return text.substring(0, end).trimRight() + '...';
   }
 
+  // Leveling definitions
+  final List<Map<String, dynamic>> _levels = const [
+    {
+      'title': 'Wanderer',
+      'lore': 'A traveler who just began the journey.',
+      'toNext': 5,
+    },
+    {
+      'title': 'Squire',
+      'lore': 'A young apprentice learning the way of the Knight.',
+      'toNext': 10,
+    },
+    {
+      'title': 'Justice Seeker',
+      'lore': 'Starts fighting evil habits and unfinished tasks.',
+      'toNext': 15,
+    },
+    {
+      'title': 'Task Slayer',
+      'lore': 'Cuts through procrastination with precision.',
+      'toNext': 20,
+    },
+    {
+      'title': 'Knight of Order',
+      'lore': 'Keeps daily discipline and defends consistency.',
+      'toNext': 25,
+    },
+    {
+      'title': 'Champion of Focus',
+      'lore': 'Masters time and slays distractions.',
+      'toNext': 30,
+    },
+    {
+      'title': 'Warden of Balance',
+      'lore': 'Achieves harmony between rest and effort.',
+      'toNext': 40,
+    },
+    {
+      'title': 'Vanguard of Mastery',
+      'lore': 'Inspires others through excellence.',
+      'toNext': 50,
+    },
+    {
+      'title': 'Justicebringer',
+      'lore': 'Embodies the discipline of a true Knight.',
+      'toNext': 60,
+    },
+    {
+      'title': 'Eternal Paladin',
+      'lore': 'The ultimate guardian of purpose.',
+      'toNext': null, // max level
+    },
+  ];
+
+  ({
+    int level,
+    String title,
+    String lore,
+    int? toNext,
+    int progressed,
+    int required
+  }) _computeLevel(int completed) {
+    int cumulative = 0;
+    for (int i = 0; i < _levels.length; i++) {
+      final toNext = _levels[i]['toNext'] as int?;
+      if (toNext == null) {
+        // max level
+        return (
+          level: i + 1,
+          title: _levels[i]['title'] as String,
+          lore: _levels[i]['lore'] as String,
+          toNext: null,
+          progressed: toNext ?? 0,
+          required: toNext ?? 1,
+        );
+      }
+      if (completed < cumulative + toNext) {
+        final progressed = completed - cumulative;
+        return (
+          level: i + 1,
+          title: _levels[i]['title'] as String,
+          lore: _levels[i]['lore'] as String,
+          toNext: toNext,
+          progressed: progressed.clamp(0, toNext),
+          required: toNext,
+        );
+      }
+      cumulative += toNext;
+    }
+    // If somehow above last tier, return max
+    final last = _levels.last;
+    return (
+      level: _levels.length,
+      title: last['title'] as String,
+      lore: last['lore'] as String,
+      toNext: null,
+      progressed: 1,
+      required: 1,
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -76,39 +177,60 @@ class _HomePageState extends State<HomePage> {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 15, left: 20, right: 20),
-            child: Center(
-              child: Text(
-                'Wanderer',
-                style: TextStyle(
-                  fontSize: 32,
-                  color: Colors.yellow.shade700,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(2, 2),
-                      blurRadius: 0,
-                      color: Colors.black,
+            child: ValueListenableBuilder(
+              valueListenable: Hive.box<Task>('tasks').listenable(),
+              builder: (context, Box<Task> box, _) {
+                final completed =
+                    box.values.where((t) => t.isCompleted == true).length;
+                final levelInfo = _computeLevel(completed);
+                return Center(
+                  child: Text(
+                    levelInfo.title,
+                    style: TextStyle(
+                      fontSize: 32,
+                      color: Colors.yellow.shade700,
+                      shadows: [
+                        Shadow(
+                          offset: Offset(2, 2),
+                          blurRadius: 0,
+                          color: Colors.black,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-            child: Row(
-              children: List.generate(20, (index) {
-                final filled = index < 5;
-                return Expanded(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 2),
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: filled ? Colors.yellow.shade700 : Colors.black54,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
+            child: ValueListenableBuilder(
+              valueListenable: Hive.box<Task>('tasks').listenable(),
+              builder: (context, Box<Task> box, _) {
+                final completed =
+                    box.values.where((t) => t.isCompleted == true).length;
+                final info = _computeLevel(completed);
+                final int bars = info.toNext ?? 20; // no max level
+                final int filled =
+                    info.toNext == null ? bars : info.progressed.clamp(0, bars);
+                return Row(
+                  children: List.generate(bars, (index) {
+                    final isFilled = index < filled;
+                    return Expanded(
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 2),
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: isFilled
+                              ? Colors.yellow.shade700
+                              : Colors.black54,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    );
+                  }),
                 );
-              }),
+              },
             ),
           ),
           Padding(
