@@ -21,7 +21,13 @@ class GroqAiService {
 
     // Criando o prompt
     final prompt =
-        '''Baseado no titulo "${title.isEmpty ? 'não informado' : title}" e na descrição "${description.isEmpty ? 'não informado' : description}" da tarefa que o usuário quer adicionar, gere uma versão melhorada da tarefa. 
+        '''Baseado no título "${title.isEmpty ? 'não informado' : title}" e na descrição "${description.isEmpty ? 'não informado' : description}" da tarefa, gere uma versão melhorada e mais clara da tarefa, seguindo princípios da Terapia Cognitivo‑Comportamental (TCC).
+
+Seu objetivo é tornar a tarefa específica, objetiva e alcançável, de modo a aumentar a probabilidade de o usuário concluí‑la com sucesso. A reformulação deve:
+- Tornar o título curto e orientado para ação.
+- Tornar a descrição detalhada, incluindo quando, onde e como a tarefa pode ser feita.
+- Dividir ações amplas em uma tarefa única e concreta (por exemplo, ao invés de “ir à academia”, escrever “realizar treino de pernas de 30 minutos na academia hoje”).
+- Evitar múltiplas ações na mesma tarefa.
 
 Retorne apenas um JSON válido no formato:
 {
