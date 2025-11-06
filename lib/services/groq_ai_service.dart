@@ -3,12 +3,14 @@ import 'package:http/http.dart' as http;
 import '../models/ai_recommendation.dart';
 
 class GroqAiService {
+  /// Indicates if the Groq service was reachable on last check.
+  static bool isAvailable = true;
   static const String _apiKey =
       'gsk_' + 'pLeJhektMxFCvX49gnkFWGdyb3FY' + 'RSCWTmMD0yOY3ckzyRbBoDtC';
   static const String _apiUrl =
       'https://api.groq.com/openai/v1/chat/completions';
 
-  /// Gera uma recomendação de tarefa usando IA baseada no título e descrição fornecidos
+  /// Generate a task recommendation using AI based on the provided title and description
   static Future<AiRecommendation> generateRecommendation({
     required String title,
     required String description,
@@ -16,29 +18,29 @@ class GroqAiService {
     // Validação de entrada
     if (title.trim().isEmpty && description.trim().isEmpty) {
       throw ArgumentError(
-          'Digite pelo menos o título ou descrição para gerar uma recomendação');
+          'Please provide at least a title or description to generate a recommendation');
     }
 
     // Criando o prompt
     final prompt =
-        '''Baseado no título "${title.isEmpty ? 'não informado' : title}" e na descrição "${description.isEmpty ? 'não informado' : description}" da tarefa, gere uma versão melhorada e mais clara da tarefa, seguindo princípios da Terapia Cognitivo‑Comportamental (TCC).
+        '''Based on the task title "${title.isEmpty ? 'not provided' : title}" and description "${description.isEmpty ? 'not provided' : description}", generate an improved and clearer version of the task in English. Follow principles from Cognitive Behavioral Therapy (CBT) where appropriate.
 
-Seu objetivo é tornar a tarefa específica, objetiva e alcançável, de modo a aumentar a probabilidade de o usuário concluí‑la com sucesso. A reformulação deve:
-- Tornar o título curto e orientado para ação.
-- Tornar a descrição detalhada, incluindo quando, onde e como a tarefa pode ser feita.
-- Dividir ações amplas em uma tarefa única e concreta (por exemplo, ao invés de “ir à academia”, escrever “realizar treino de pernas de 30 minutos na academia hoje”).
-- Evitar múltiplas ações na mesma tarefa.
+Your goal is to make the task specific, actionable, and achievable so the user is more likely to complete it. The reformulation should:
+- Make the title short and action-oriented.
+- Make the description detailed, including when, where and how the task can be done.
+- Break down broad actions into a single concrete task (e.g., instead of "go to the gym", write "do a 30-minute leg workout at the gym today").
+- Avoid multiple actions in the same task.
 
-Retorne apenas um JSON válido no formato:
+Return only a valid JSON object with the following keys:
 {
-  "title": "título melhorado da tarefa",
-  "description": "descrição detalhada e melhorada da tarefa"
+  "title": "improved task title",
+  "description": "detailed and improved task description"
 }
 
-Não inclua texto adicional, apenas o JSON.''';
+Do not include any extra text, only the JSON.''';
 
-    // Log da requisição para debug
-    print('Fazendo requisição para: $_apiUrl');
+    // Request log for debugging
+    print('Making request to: $_apiUrl');
     print('Headers: Authorization: Bearer ${_apiKey.substring(0, 10)}...');
 
     try {
@@ -84,15 +86,54 @@ Não inclua texto adicional, apenas o JSON.''';
           description: aiResponse['description'] ?? '',
         );
       } else {
-        // Log detalhado do erro
-        print('Erro na API - Status: ${response.statusCode}');
-        print('Resposta: ${response.body}');
+        // Detailed error log
+        print('API error - Status: ${response.statusCode}');
+        print('Response: ${response.body}');
         throw Exception(
-            'Falha na API: ${response.statusCode} - ${response.body}');
+            'API failure: ${response.statusCode} - ${response.body}');
       }
     } catch (e) {
-      print('Erro detalhado: $e');
+      print('Detailed error: $e');
       rethrow;
+    }
+  }
+
+  /// Performs a lightweight test request to check if the Groq API is reachable.
+  /// Sets [isAvailable] to true when a 200 response is received, otherwise false.
+  /// This method is safe to call at app startup and will timeout after 5 seconds.
+  static Future<void> initialize() async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse(_apiUrl),
+            headers: {
+              'Authorization': 'Bearer $_apiKey',
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode({
+              // Minimal harmless prompt for availability check
+              'messages': [
+                {
+                  'role': 'user',
+                  'content':
+                      'Ping: please respond with a short ok in JSON {"ok":true}',
+                }
+              ],
+              'model': 'meta-llama/llama-4-scout-17b-16e-instruct',
+            }),
+          )
+          .timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        isAvailable = true;
+        print('Groq AI: service reachable');
+      } else {
+        isAvailable = false;
+        print('Groq AI: unreachable, status ${response.statusCode}');
+      }
+    } catch (e) {
+      isAvailable = false;
+      print('Groq AI availability check failed: $e');
     }
   }
 }

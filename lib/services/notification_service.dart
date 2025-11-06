@@ -27,7 +27,7 @@ class NotificationService {
         requestAlertPermission: true,
       ),
       linux: LinuxInitializationSettings(
-        defaultActionName: 'Abrir TaskKnight',
+        defaultActionName: 'Open TaskKnight',
       ),
     );
 
@@ -88,8 +88,8 @@ class NotificationService {
       final platformDetails = NotificationDetails(
         android: AndroidNotificationDetails(
           'daily_reminder',
-          'Lembretes Diários TaskKnight',
-          channelDescription: 'Notificações para lembrar de suas tarefas',
+          'TaskKnight Daily Reminders',
+          channelDescription: 'Notifications to remind you about your tasks',
           importance: Importance.max,
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',

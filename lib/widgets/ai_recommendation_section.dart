@@ -6,6 +6,7 @@ class AiRecommendationSection extends StatelessWidget {
   final AiRecommendation? recommendation;
   final VoidCallback onGenerateRecommendation;
   final VoidCallback onUseRecommendation;
+  final bool aiEnabled;
 
   const AiRecommendationSection({
     super.key,
@@ -13,6 +14,7 @@ class AiRecommendationSection extends StatelessWidget {
     this.recommendation,
     required this.onGenerateRecommendation,
     required this.onUseRecommendation,
+    this.aiEnabled = true,
   });
 
   @override
@@ -26,7 +28,8 @@ class AiRecommendationSection extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: GestureDetector(
-              onTap: isLoading ? null : onGenerateRecommendation,
+              onTap:
+                  (isLoading || !aiEnabled) ? null : onGenerateRecommendation,
               child: Container(
                 width: 79,
                 height: 34,
@@ -63,6 +66,26 @@ class AiRecommendationSection extends StatelessWidget {
               ),
             ),
           ),
+
+          const SizedBox(height: 6),
+
+          // Message when AI is disabled/unavailable
+          if (!aiEnabled)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Container(
+                width: 260,
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: const Text(
+                  'AI is unavailable — you may be offline or the Groq service could not be reached.',
+                  style: TextStyle(
+                    fontFamily: 'VCR_OSD_MONO',
+                    fontSize: 12,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
 
           const SizedBox(height: 10),
 

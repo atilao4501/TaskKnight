@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:task_knight_alpha/models/task.dart';
 import 'package:task_knight_alpha/models/settings.dart';
 import 'package:task_knight_alpha/services/notification_service.dart';
+import 'package:task_knight_alpha/services/groq_ai_service.dart';
 import 'package:task_knight_alpha/wrappers/main_wrapper.dart';
 
 void main() async {
@@ -32,6 +33,14 @@ void main() async {
 
   // 🔔 Inicializar serviço de notificações
   await NotificationService.initialize();
+
+  // 🔎 Verificar disponibilidade do serviço Groq AI antes de iniciar o app
+  try {
+    // Import estático aqui para evitar circular imports; chama inicialização que define a flag de disponibilidade
+    await GroqAiService.initialize();
+  } catch (e) {
+    print('Erro ao checar Groq AI na inicialização: $e');
+  }
 
   runApp(const MyApp());
 }

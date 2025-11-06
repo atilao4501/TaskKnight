@@ -29,8 +29,8 @@ class NotificationSoundService {
       };
     } catch (e) {
       if (kDebugMode) {
-        print('⚠️ Erro ao preparar sons: $e');
-        print('🔄 Usando sons padrão do sistema...');
+        print('⚠️ Error preparing sounds: $e');
+        print('🔄 Falling back to system default sounds...');
       }
 
       return {
@@ -48,15 +48,15 @@ class NotificationSoundService {
       await rootBundle.load('assets/sounds/$soundName.mp3');
 
       if (kDebugMode) {
-        print('✅ Som Android encontrado: assets/sounds/$soundName.mp3');
-        print('🔧 Usando RawResource: $soundName (sem extensão)');
+        print('✅ Android sound found: assets/sounds/$soundName.mp3');
+        print('🔧 Using RawResource: $soundName (without extension)');
       }
 
       // Retorna apenas o nome para RawResourceAndroidNotificationSound
       return soundName;
     } catch (e) {
       if (kDebugMode) {
-        print('❌ Erro ao preparar som Android: $e');
+        print('❌ Error preparing Android sound: $e');
       }
       return null;
     }
@@ -71,27 +71,27 @@ class NotificationSoundService {
         await rootBundle.load('assets/sounds/$soundName.mp3');
 
         if (kDebugMode) {
-          print('✅ Som iOS/macOS encontrado: assets/sounds/$soundName.mp3');
+          print('✅ iOS/macOS sound found: assets/sounds/$soundName.mp3');
         }
 
         // Para macOS, usar sons específicos do sistema
         if (defaultTargetPlatform == TargetPlatform.macOS) {
           // Lista de sons disponíveis no macOS (ordem de recomendação para TaskKnight)
           const availableSounds = [
-            'Hero', // 🦸 Som épico - perfeito para tarefas heroicas!
-            'Sosumi', // 🔔 Som clássico do Mac
-            'Glass', // ✨ Som cristalino
-            'Tink', // 🎵 Som sutil mas distinctivo
-            'Ping', // 📬 Som simples
-            'Pop', // 💫 Som de bolha
+            'Hero', // 🦸 Epic sound - perfect for heroic tasks!
+            'Sosumi', // 🔔 Classic Mac sound
+            'Glass', // ✨ Clear glass chime
+            'Tink', // 🎵 Subtle but distinct
+            'Ping', // 📬 Simple ping
+            'Pop', // 💫 Bubble pop
           ];
 
           // Som atual - mude aqui para trocar o som!
           const currentSound = 'Hero'; // 🎯 Troque por qualquer da lista acima
 
           if (kDebugMode) {
-            print('🍎 macOS: Usando som "$currentSound"');
-            print('🎵 Outros disponíveis: ${availableSounds.join(', ')}');
+            print('🍎 macOS: Using sound "$currentSound"');
+            print('🎵 Available sounds: ${availableSounds.join(', ')}');
           }
 
           return currentSound;
@@ -101,13 +101,13 @@ class NotificationSoundService {
         return '$soundName.mp3';
       } catch (e) {
         if (kDebugMode) {
-          print('❌ Arquivo não encontrado: assets/sounds/$soundName.mp3');
+          print('❌ File not found: assets/sounds/$soundName.mp3');
         }
         return null;
       }
     } catch (e) {
       if (kDebugMode) {
-        print('❌ Erro ao preparar som iOS/macOS: $e');
+        print('❌ Error preparing iOS/macOS sound: $e');
       }
       return null;
     }

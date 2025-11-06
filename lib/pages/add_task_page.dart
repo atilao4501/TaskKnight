@@ -61,7 +61,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text(
-                  'Digite pelo menos o título ou descrição para gerar uma recomendação'),
+                  'Please provide at least a title or description to generate a recommendation'),
               backgroundColor: Colors.orange,
               duration: const Duration(seconds: 3),
             ),
@@ -80,7 +80,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
         _isLoadingAI = false;
       });
     } catch (e) {
-      print('Erro detalhado: $e');
+      print('Detailed error: $e');
 
       setState(() {
         _isLoadingAI = false;
@@ -92,7 +92,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
             content: e is ArgumentError
                 ? Text(e.message)
                 : const Text(
-                    'Função de IA não disponível no momento. Tente novamente mais tarde.'),
+                    'AI feature not available at the moment. Please try again later.'),
             backgroundColor: e is ArgumentError ? Colors.orange : Colors.red,
             duration: const Duration(seconds: 4),
           ),
@@ -196,6 +196,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                                 onGenerateRecommendation:
                                     _generateAIRecommendation,
                                 onUseRecommendation: _saveAIRecommendation,
+                                aiEnabled: GroqAiService.isAvailable,
                               ),
 
                               const SizedBox(height: 25),
@@ -203,9 +204,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                               // Botão Accept
                               AcceptButton(
                                 onPressed: _saveOrUpdateTask,
-                                label: widget.task == null
-                                    ? 'Salvar'
-                                    : 'Atualizar',
+                                label: widget.task == null ? 'Save' : 'Update',
                               ),
                             ],
                           ),

@@ -142,7 +142,7 @@ class _SettingsPageState extends State<SettingsPage> {
           builder: (context) => AlertDialog(
             backgroundColor: const Color(0xFFA67B5B),
             title: const Text(
-              '🔍 Notification Diagnostics',
+              '🔍 Run diagnostics',
               style: TextStyle(
                 fontFamily: 'VCR_OSD_MONO',
                 fontSize: 16,
@@ -483,7 +483,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                         ),
                                         child: const Center(
                                           child: Text(
-                                            '🔍 Diagnosticar',
+                                            '🔍 Run diagnostics',
                                             style: TextStyle(
                                               fontFamily: 'VCR_OSD_MONO',
                                               fontSize: 12,
@@ -496,10 +496,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
                                   const SizedBox(height: 8),
 
-                                  // Botão Salvar
+                                  // Save button
                                   AcceptButton(
                                     onPressed: _saveSettings,
-                                    label: 'Salvar',
+                                    label: 'Save',
                                   ),
                                 ],
                               ),
