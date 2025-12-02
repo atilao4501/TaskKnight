@@ -19,10 +19,10 @@ class AiRecommendationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 313,
-      height: 207,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           // Botão AI
           Align(

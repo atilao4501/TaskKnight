@@ -140,6 +140,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFC19A6B),
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -166,13 +167,14 @@ class _AddTaskPageState extends State<AddTaskPage> {
                         onPressed: () => Navigator.pop(context),
                       ),
 
-                      // Conteúdo principal
-                      Positioned(
-                        left: 10,
-                        top: 200,
-                        child: Container(
-                          width: 333,
-                          height: 502,
+                      // Conteúdo principal com scroll
+                      Positioned.fill(
+                        top: 80,
+                        child: SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 20,
+                          ),
                           child: Column(
                             children: [
                               // Campo Title
@@ -206,6 +208,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
                                 onPressed: _saveOrUpdateTask,
                                 label: widget.task == null ? 'Save' : 'Update',
                               ),
+
+                              const SizedBox(height: 80),
                             ],
                           ),
                         ),
